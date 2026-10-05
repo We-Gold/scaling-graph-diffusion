@@ -22,3 +22,6 @@ slurm-*.out
 
 # OS
 .DS_Store
+
+# Agent worktrees
+/.claude/worktrees/
