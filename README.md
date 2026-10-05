@@ -10,6 +10,8 @@ The project has two methods and one dataset:
 - **SparserDiff**: SparseDiff with a new-edge sampler that never builds the full set of non-existent edges.
 - **RedditWalk**: a large-scale benchmark built from the Reddit Hyperlink Network.
 
+This is not the original development repository. I (with help from Claude Code) migrated and re-organized the codebase around the final report. 
+
 ## Report to code
 
 | Report | Folder | Environment | Runs on |
