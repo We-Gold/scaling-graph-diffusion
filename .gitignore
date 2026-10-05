@@ -1,0 +1,24 @@
+# Planning notes (local only)
+/tmp/
+
+# Python
+.venv/
+__pycache__/
+*.egg-info/
+.pytest_cache/
+
+# Node
+node_modules/
+.next/
+
+# Data, checkpoints, run outputs
+/data/*
+!/data/README.md
+outputs/
+checkpoints/
+*.ckpt
+wandb/
+slurm-*.out
+
+# OS
+.DS_Store
