@@ -1,0 +1,10 @@
+{
+  "tsv_rows": 858488,
+  "directed_edges_dedup": 339643,
+  "nodes": 67180,
+  "num_wccs": 712,
+  "gwcc_nodes": 65648,
+  "gwcc_percent": 97.72,
+  "second_wcc_nodes": 9,
+  "nodes_outside_gwcc": 1532
+}
