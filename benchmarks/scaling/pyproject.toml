@@ -1,0 +1,24 @@
+[project]
+name = "scaling-benchmark"
+version = "0.1.0"
+description = "Report 5.1 scaling benchmark: memory and time profiling of 5 graph diffusion models (tables 1-8)"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "scale-mgd",
+    "mg-diff",
+    "numpy",
+    "psutil",
+    "torch",
+]
+
+[dependency-groups]
+dev = ["pytest"]
+
+# Flat scripts run with `python -m` from this folder; nothing to build or install.
+[tool.uv]
+package = false
+
+[tool.uv.sources]
+scale-mgd = { workspace = true }
+mg-diff = { workspace = true }
