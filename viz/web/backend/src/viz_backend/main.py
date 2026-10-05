@@ -140,6 +140,8 @@ async def get_timestep_svg(
             }
         )
         
+    except HTTPException:
+        raise
     except FileNotFoundError as e:
         raise HTTPException(status_code=404, detail=str(e))
     except ValueError as e:
@@ -181,6 +183,8 @@ async def get_timestep_data(process_type: str, timestep: int):
             "num_bonds": len(bonds_data)
         }
         
+    except HTTPException:
+        raise
     except FileNotFoundError as e:
         raise HTTPException(status_code=404, detail=str(e))
     except ValueError as e:
