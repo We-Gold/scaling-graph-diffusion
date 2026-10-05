@@ -99,7 +99,7 @@ export default function Statistics() {
                   </tr>
                   <tr className="border-b border-border/20">
                     <td className="py-3 px-4 font-medium">End State (t=500)</td>
-                    <td className="py-3 px-4 text-muted-foreground">Clean Original Molecule</td>
+                    <td className="py-3 px-4 text-muted-foreground">Generated Molecule (not the forward one)</td>
                     <td className="py-3 px-4 text-muted-foreground">Fully Noisy Structure</td>
                   </tr>
                   <tr className="border-b border-border/20 bg-muted/20">
@@ -185,7 +185,7 @@ export default function Statistics() {
                 <div className="pt-2 border-t border-border/30">
                   <span className="font-medium">Atom Types:</span>
                   <div className="flex flex-wrap gap-2 mt-2">
-                    {['C', 'N', 'O', 'F', 'S', 'Cl', 'Br', 'P', 'I'].map((atom) => (
+                    {['C', 'N', 'S', 'O', 'F', 'Cl', 'Br', 'H'].map((atom) => (
                       <Badge key={atom} variant="secondary" className="font-mono">
                         {atom}
                       </Badge>

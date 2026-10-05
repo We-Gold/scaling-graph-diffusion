@@ -17,6 +17,10 @@ const DEFAULT_INTERVAL = 100;
 
 // Auto-detect backend URL: use same host as frontend
 const getBackendURL = () => {
+  // NEXT_PUBLIC_API_URL is inlined at build time (set it before `npm run build` or `npm run dev`).
+  if (process.env.NEXT_PUBLIC_API_URL) {
+    return process.env.NEXT_PUBLIC_API_URL.replace(/\/$/, '');
+  }
   if (typeof window !== 'undefined') {
     // Client-side: use same hostname as frontend
     const protocol = window.location.protocol;
