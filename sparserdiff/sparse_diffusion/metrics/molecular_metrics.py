@@ -26,7 +26,7 @@ from torchmetrics import (
 from torchmetrics.utilities.data import _flatten_dict, allclose
 from fcd_torch import FCD
 
-import utils
+from sparse_diffusion import utils
 from sparse_diffusion.metrics.metrics_utils import (
     counter_to_tensor,
     wasserstein1d,
@@ -162,7 +162,7 @@ class SamplingMolecularMetrics(nn.Module):
         self.valid_mols.extend(valid)
 
         # FCD
-        FCD_eval = FCD(device='cuda:0', n_jobs=8)
+        FCD_eval = FCD(device='cuda:0' if torch.cuda.is_available() else 'cpu', n_jobs=8)
         # test_smiles = [for i in test_smiles]
         test_smiles_no_h = []
         total_count = 0

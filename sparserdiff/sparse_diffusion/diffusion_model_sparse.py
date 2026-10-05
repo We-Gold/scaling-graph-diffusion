@@ -12,15 +12,15 @@ import torch.nn as nn
 import torch.nn.functional as F
 import pytorch_lightning as pl
 
-from models.conv_transformer_model import GraphTransformerConv
-from diffusion.noise_schedule import (
+from sparse_diffusion.models.conv_transformer_model import GraphTransformerConv
+from sparse_diffusion.diffusion.noise_schedule import (
     PredefinedNoiseScheduleDiscrete,
     MarginalUniformTransition,
 )
 
-from metrics.train_metrics import TrainLossDiscrete
-from metrics.abstract_metrics import SumExceptBatchMetric, SumExceptBatchKL, NLL
-from analysis.visualization import Visualizer
+from sparse_diffusion.metrics.train_metrics import TrainLossDiscrete
+from sparse_diffusion.metrics.abstract_metrics import SumExceptBatchMetric, SumExceptBatchKL, NLL
+from sparse_diffusion.analysis.visualization import Visualizer
 from sparse_diffusion import utils
 from sparse_diffusion.diffusion import diffusion_utils
 from sparse_diffusion.diffusion.sample_edges_utils import (
@@ -33,6 +33,7 @@ from sparse_diffusion.diffusion.sample_edges_utils import (
 from sparse_diffusion.diffusion.sample_edges import (
     sample_query_edges,
     sample_non_existing_edges_batched,
+    sample_non_existing_edges_novel,
     sampled_condensed_indices_uniformly,
 )
 from sparse_diffusion.models.sign_pos_encoder import SignNetNodeEncoder
@@ -69,6 +70,8 @@ class DiscreteDenoisingDiffusion(pl.LightningModule):
 
         # sparse settings
         self.edge_fraction = cfg.model.edge_fraction
+        # SparserDiff (report sec 4.2): new-edge sampler without the dense candidate set
+        self.use_novel_sampling = cfg.model.get("use_novel_sampling", False)
         self.autoregressive = cfg.model.autoregressive
 
         self.cfg = cfg
@@ -797,8 +800,13 @@ class DiscreteDenoisingDiffusion(pl.LightningModule):
 
         # combine existing and non-existing edges (both are directed, i.e. triu)
         if num_emerge_edges.max() > 0:
-            # sample non-existing edges
-            neg_edge_index = sample_non_existing_edges_batched(
+            # sample non-existing edges (SparserDiff sampler if the flag is set)
+            sample_non_existing_edges = (
+                sample_non_existing_edges_novel
+                if self.use_novel_sampling
+                else sample_non_existing_edges_batched
+            )
+            neg_edge_index = sample_non_existing_edges(
                 num_edges_to_sample=num_emerge_edges,
                 existing_edge_index=dir_edge_index,
                 num_nodes=num_nodes,
@@ -821,8 +829,8 @@ class DiscreteDenoisingDiffusion(pl.LightningModule):
         E_t_index = E_t_index[:, mask]
         E_t_index, E_t_attr = utils.to_undirected(E_t_index, E_t_attr)
 
-        E_t_attr = F.one_hot(E_t_attr, num_classes=self.out_dims.E)
-        node_t = F.one_hot(node_t, num_classes=self.out_dims.X)
+        E_t_attr = F.one_hot(E_t_attr, num_classes=self.out_dims.E).float()
+        node_t = F.one_hot(node_t, num_classes=self.out_dims.X).float()
 
         sparse_noisy_data = {
             "t_int": t_int,
@@ -1645,22 +1653,35 @@ class DiscreteDenoisingDiffusion(pl.LightningModule):
         node_mask = utils.ptr_to_node_mask(ptr, batch, n_node)
 
         # get extra data to correct places
-        edge_batch = sparse_noisy_data["batch"][
-            sparse_noisy_data["comp_edge_index_t"][0].long()
-        ]
-        edge_batch = edge_batch.long()
-        dense_comp_edge_index = (
-            sparse_noisy_data["comp_edge_index_t"]
-            - ptr[edge_batch]
-            + edge_batch * n_node
-        )
-        comp_edge_index0 = dense_comp_edge_index[0] % n_node
-        comp_edge_index1 = dense_comp_edge_index[1] % n_node
+        if isinstance(extra_data, utils.SparsePlaceHolder):
+            # DummyExtraFeatures (model.extra_features=null) returns empty sparse features
+            extraX = extra_data.node
+            if extra_data.edge_attr.shape[-1] == 0:
+                extraE = torch.zeros(
+                    (sparse_noisy_data["comp_edge_index_t"].shape[1], 0),
+                    device=extraX.device,
+                )
+            else:
+                raise NotImplementedError(
+                    "Sparse extra edge features not yet supported"
+                )
+        else:
+            edge_batch = sparse_noisy_data["batch"][
+                sparse_noisy_data["comp_edge_index_t"][0].long()
+            ]
+            edge_batch = edge_batch.long()
+            dense_comp_edge_index = (
+                sparse_noisy_data["comp_edge_index_t"]
+                - ptr[edge_batch]
+                + edge_batch * n_node
+            )
+            comp_edge_index0 = dense_comp_edge_index[0] % n_node
+            comp_edge_index1 = dense_comp_edge_index[1] % n_node
 
-        extraE = extra_data.E[
-            edge_batch, comp_edge_index0.long(), comp_edge_index1.long()
-        ]
-        extraX = extra_data.X.flatten(end_dim=1)[node_mask.flatten(end_dim=1)]
+            extraE = extra_data.E[
+                edge_batch, comp_edge_index0.long(), comp_edge_index1.long()
+            ]
+            extraX = extra_data.X.flatten(end_dim=1)[node_mask.flatten(end_dim=1)]
 
         # scale extra data when self.scaling_layer is true
         extraX, extraE, extra_y = self.scale_extra_data(

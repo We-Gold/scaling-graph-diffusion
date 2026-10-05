@@ -2,19 +2,63 @@
 import math
 
 # Installed packages
+import numpy as np
 import torch
 from torch import Tensor
 from torch_geometric.utils import to_dense_adj
 import torch_geometric.nn.pool as pool
 
 # My files
-import utils
+from sparse_diffusion import utils
 from sparse_diffusion.diffusion.sample_edges_utils import (
     matrix_to_condensed_index,
     condensed_to_matrix_index_batch,
     condensed_to_matrix_index,
     matrix_to_condensed_index_batch,
 )
+
+
+def sample_without_replacement_torch(population_size: int, sample_size: int) -> np.ndarray:
+    """Uniformly sample `sample_size` distinct integers from [0, population_size)
+    using vectorized rejection sampling on PyTorch.
+
+    O(sample_size) expected memory, no O(population_size) allocation.
+    Speed: C++ PyTorch kernels instead of Python for-loop.
+
+    Expected rounds to convergence ~ 1 / (1 - sample_size/population_size),
+    so for 10% sample rate this is ~1.1 rounds (nearly always 1-2 passes).
+
+    Returns a NumPy int64 array of sampled indices.
+    """
+    if sample_size > population_size:
+        raise ValueError("sample_size cannot exceed population_size")
+    if sample_size == 0:
+        return np.empty(0, dtype=np.int64)
+
+    # Oversample by a small factor to absorb expected collisions in one pass
+    fill_ratio = sample_size / population_size
+    oversample = max(int(sample_size * (1.0 + fill_ratio + 0.05)) + 32, sample_size + 32)
+
+    selected = torch.empty(0, dtype=torch.long)
+
+    while selected.numel() < sample_size:
+        needed = sample_size - selected.numel()
+        batch = min(oversample, needed + needed // 4 + 32)
+        candidates = torch.randint(0, population_size, (batch,))
+
+        # Remove any already-selected indices
+        if selected.numel() > 0:
+            mask = ~torch.isin(candidates, selected)
+            candidates = candidates[mask]
+
+        # Deduplicate within this batch
+        candidates = torch.unique(candidates)
+
+        # Accumulate
+        take = candidates[:needed]
+        selected = torch.cat([selected, take])
+
+    return selected[:sample_size].numpy().astype(np.int64)
 
 
 def test_sample_query_edges():
@@ -237,6 +281,128 @@ def sample_query_edges(
         num_nodes_per_graph
     )
     return edge_index, batch
+
+
+def sample_non_existing_edges_novel(
+    num_edges_to_sample, existing_edge_index, num_nodes, batch
+):
+    """SparserDiff: sample non-existing edges without building the dense
+    candidate set (report sec 4.2, Algorithm 4).
+
+    Per graph: prefix sum L over non-edges per row, vectorized rejection
+    sampling of k distinct indices (sample_without_replacement_torch), then
+    np.searchsorted to map each index to a row u and a column v.
+    Runs on CPU with NumPy, one graph at a time. The result is moved back to
+    the input device.
+
+    Complexity:
+      - Time  O(n + E log E + S log n)
+      - Space O(n + E + S), no O(n^2) allocation
+
+    Args:
+        num_edges_to_sample: (bs,) long tensor
+        existing_edge_index: (2, E) long tensor, upper triangle only (row < col)
+        num_nodes: (bs,) long tensor
+        batch: (N,) long tensor, graph membership of each node
+
+    Returns:
+        new_edge_index: (2, total_sampled) long tensor
+    """
+    device = existing_edge_index.device
+    bs = num_nodes.shape[0]
+
+    ptr = torch.zeros(bs + 1, dtype=torch.long, device=device)
+    ptr[1:] = torch.cumsum(num_nodes, dim=0)
+
+    existing_edge_batch = batch[existing_edge_index[0]]
+    local_edge_index = existing_edge_index - ptr[existing_edge_batch]
+
+    all_new_rows = []
+    all_new_cols = []
+
+    for g in range(bs):
+        n = num_nodes[g].item()
+        n_to_sample = num_edges_to_sample[g].item()
+
+        if n_to_sample == 0 or n <= 1:
+            continue
+
+        # Build sorted adjacency via numpy (no Python loop over edges)
+        g_mask = existing_edge_batch == g
+        g_rows = local_edge_index[0, g_mask].cpu().numpy().astype(np.int64)
+        g_cols = local_edge_index[1, g_mask].cpu().numpy().astype(np.int64)
+
+        if len(g_rows) > 0:
+            # lexsort: primary key = row, secondary key = col -> edges sorted by (row, col)
+            order = np.lexsort((g_cols, g_rows))
+            s_rows = g_rows[order]
+            s_cols = g_cols[order]
+            # row_ptr[u+1] - row_ptr[u] = degree of node u
+            row_ptr = np.zeros(n + 1, dtype=np.int64)
+            np.add.at(row_ptr[1:], s_rows, 1)
+            np.cumsum(row_ptr, out=row_ptr)
+            deg = row_ptr[1:] - row_ptr[:-1]
+        else:
+            s_cols = np.empty(0, dtype=np.int64)
+            row_ptr = np.zeros(n + 1, dtype=np.int64)
+            deg = np.zeros(n, dtype=np.int64)
+
+        # Prefix sum L over non-edges per row
+        capacity = (n - 1) - np.arange(n, dtype=np.int64) - deg
+        L = np.empty(n, dtype=np.int64)
+        L[0] = 0
+        np.cumsum(capacity[:-1], out=L[1:])
+        total_missing = int(L[-1] + capacity[-1])
+
+        if total_missing < n_to_sample:
+            raise ValueError(
+                f"Graph {g}: not enough missing edges ({total_missing}) "
+                f"to sample {n_to_sample}"
+            )
+
+        # Rejection sampling: O(S) memory, vectorized PyTorch
+        r_indices = sample_without_replacement_torch(total_missing, n_to_sample)
+
+        # Row lookup: vectorized searchsorted
+        u_arr = np.searchsorted(L, r_indices, side="right").astype(np.int64) - 1
+        j_arr = r_indices - L[u_arr]
+
+        # Col lookup: group by unique u, numpy searchsorted per group
+        # Precompute f_flat for all rows: f[row_ptr[u]+k] = s_cols[row_ptr[u]+k] - (u+1) - k
+        if len(s_cols) > 0:
+            u_range = np.repeat(np.arange(n, dtype=np.int64), deg)  # node index for each edge
+            k_range = np.arange(len(s_cols), dtype=np.int64) - row_ptr[u_range]  # rank within row
+            f_flat = s_cols - (u_range + 1) - k_range
+        else:
+            f_flat = np.empty(0, dtype=np.int64)
+
+        # For each unique u hit by samples, batch-searchsorted into f_flat slice
+        sorted_order = np.argsort(u_arr, kind="stable")
+        u_sorted = u_arr[sorted_order]
+        unique_u, starts, cnts = np.unique(u_sorted, return_index=True, return_counts=True)
+
+        ip_arr = np.zeros(n_to_sample, dtype=np.int64)
+        for i in range(len(unique_u)):
+            u = int(unique_u[i])
+            grp = sorted_order[starts[i]: starts[i] + cnts[i]]
+            d = int(deg[u])
+            if d > 0:
+                f_u = f_flat[row_ptr[u]: row_ptr[u] + d]
+                ip_arr[grp] = np.searchsorted(f_u, j_arr[grp], side="right")
+            # else ip stays 0
+
+        v_arr = (u_arr + 1) + j_arr + ip_arr
+
+        node_offset = ptr[g].item()
+        all_new_rows.append(u_arr + node_offset)
+        all_new_cols.append(v_arr + node_offset)
+
+    if not all_new_rows:
+        return torch.zeros((2, 0), dtype=torch.long, device=device)
+
+    rows = np.concatenate(all_new_rows)
+    cols = np.concatenate(all_new_cols)
+    return torch.tensor(np.stack([rows, cols]), dtype=torch.long, device=device)
 
 
 def sample_non_existing_edges_batched(

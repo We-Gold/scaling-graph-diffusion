@@ -24,6 +24,7 @@ sn_hidden_dim: 32
 # sparse generation settings
 edge_fraction: 0.5
 autoregressive: False
+use_novel_sampling: False   # SparserDiff: True uses the new-edge sampler of report sec 4.2
 
 
 # The dimensions should satisfy dx % n_head == 0

@@ -172,7 +172,7 @@ class SpectreGraphDataset(InMemoryDataset):
             random_order = torch.randperm(adj.shape[-1])
             adj = adj[random_order, :]
             adj = adj[:, random_order]
-            net = nx.from_numpy_matrix(adj.numpy()).to_undirected()
+            net = nx.from_numpy_array(adj.numpy()).to_undirected()
 
             if i in train_indices:
                 train_data.append(adj)
