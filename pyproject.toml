@@ -1,7 +1,7 @@
 # uv workspace root. Each part is a member with its own pyproject.toml.
 # sparserdiff/ is not a member: it pins an older Python and torch (see sparserdiff/README.md).
 [tool.uv.workspace]
-members = []
+members = ["benchmarks/edge_sampling"]
 exclude = ["sparserdiff"]
 
 [tool.uv]
