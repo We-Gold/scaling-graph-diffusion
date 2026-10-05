@@ -2,6 +2,7 @@
 # sparserdiff/ is not a member: it pins an older Python and torch (see sparserdiff/README.md).
 [tool.uv.workspace]
 members = []
+exclude = ["sparserdiff"]
 
 [tool.uv]
 constraint-dependencies = ["numpy<2"]
