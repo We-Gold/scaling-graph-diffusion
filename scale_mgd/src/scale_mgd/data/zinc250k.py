@@ -263,7 +263,7 @@ class Zinc250kDataset(Dataset):
                 processed_path,
             )
         except Exception:
-            # If saving fails, ignore — dataset will still work from memory
+            # If saving fails, ignore: dataset will still work from memory
             pass
 
         # keep tensors on the instance for potential fast access

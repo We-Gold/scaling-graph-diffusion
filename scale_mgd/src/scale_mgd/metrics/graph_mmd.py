@@ -85,7 +85,7 @@ def compute_mmd(samples1, samples2, kernel, is_hist=True, *args, **kwargs):
 
 
 # ============================================================================
-# Graph-level statistics → histogram → MMD
+# Graph-level statistics -> histogram -> MMD
 # ============================================================================
 
 def _degree_worker(G):
@@ -188,7 +188,7 @@ def clustering_stats(graph_ref_list, graph_pred_list, bins=100, is_parallel=True
 
 
 # ============================================================================
-# RBF MMD via random GIN (no DGL — uses PyG)
+# RBF MMD via random GIN (PyG, no DGL)
 # ============================================================================
 
 class _GINConvLayer(nn.Module):
@@ -226,7 +226,7 @@ class RandomGINFeatureExtractor(nn.Module):
     Random-weight GIN for graph-level feature extraction.
 
     Architecture matches SparseDiff: 3 layers, hidden_dim=35, sum pooling.
-    Weights are NOT trained — used only for computing graph embeddings
+    Weights are NOT trained: used only for computing graph embeddings
     for RBF MMD evaluation.
     """
 
@@ -240,7 +240,7 @@ class RandomGINFeatureExtractor(nn.Module):
         for _ in range(num_layers - 1):
             self.layers.append(_GINConvLayer(hidden_dim, hidden_dim))
 
-        self.eval()  # Always in eval mode — no training
+        self.eval()  # Always in eval mode: no training
 
     @torch.no_grad()
     def forward(self, x, edge_index, batch):
