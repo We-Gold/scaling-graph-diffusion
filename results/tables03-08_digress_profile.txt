@@ -1,0 +1,430 @@
+
+--- Profiling Molecular Graphs ---
+Max Nodes: 20, Batch Size: 128, Xdim: 9, Edim: 4
+Profiling with 10 steps over 10 seeds: [10, 23, 27, 36, 42, 58, 61, 74, 89, 94]
+Device: cuda
+Running Seed 10...Running Seed 23...Running Seed 27...Running Seed 36...Running Seed 42...Running Seed 58...Running Seed 61...Running Seed 74...Running Seed 89...Running Seed 94...
+
+=== Profiling Results ===
+
+--- Specific Results per Seed ---
+Seed   | Category           | Time (s)   | RAM (MB)   | GPU (MB)  
+------------------------------------------------------------------
+10     | Noise Addition     | 0.0019     | 1167.09    | 32.17     
+10     | Model Pass         | 0.1037     | 1241.46    | 342.63    
+10     | Training Step      | 0.0847     | 1271.73    | 2002.08   
+10     | Backward Process   | 0.2655     | 1280.76    | 388.35    
+------------------------------------------------------------------
+23     | Noise Addition     | 0.0017     | 1280.91    | 40.29     
+23     | Model Pass         | 0.0217     | 1280.91    | 350.75    
+23     | Training Step      | 0.0451     | 1280.99    | 2001.95   
+23     | Backward Process   | 0.2492     | 1281.98    | 388.35    
+------------------------------------------------------------------
+27     | Noise Addition     | 0.0017     | 1281.09    | 40.32     
+27     | Model Pass         | 0.0221     | 1281.09    | 350.78    
+27     | Training Step      | 0.0435     | 1281.09    | 2001.98   
+27     | Backward Process   | 0.2534     | 1282.07    | 388.38    
+------------------------------------------------------------------
+36     | Noise Addition     | 0.0017     | 1282.25    | 40.34     
+36     | Model Pass         | 0.0217     | 1282.25    | 350.80    
+36     | Training Step      | 0.0433     | 1282.28    | 2001.38   
+36     | Backward Process   | 0.2492     | 1284.16    | 389.65    
+------------------------------------------------------------------
+42     | Noise Addition     | 0.0017     | 1282.73    | 40.34     
+42     | Model Pass         | 0.0216     | 1282.73    | 350.80    
+42     | Training Step      | 0.0429     | 1282.73    | 2001.38   
+42     | Backward Process   | 0.2526     | 1284.67    | 389.65    
+------------------------------------------------------------------
+58     | Noise Addition     | 0.0019     | 1282.65    | 40.37     
+58     | Model Pass         | 0.0220     | 1282.65    | 350.83    
+58     | Training Step      | 0.0435     | 1282.65    | 2001.40   
+58     | Backward Process   | 0.2518     | 1283.60    | 389.68    
+------------------------------------------------------------------
+61     | Noise Addition     | 0.0017     | 1284.94    | 40.39     
+61     | Model Pass         | 0.0224     | 1284.94    | 350.85    
+61     | Training Step      | 0.0435     | 1284.94    | 2002.05   
+61     | Backward Process   | 0.2551     | 1286.66    | 388.45    
+------------------------------------------------------------------
+74     | Noise Addition     | 0.0017     | 1282.98    | 40.39     
+74     | Model Pass         | 0.0224     | 1282.98    | 350.85    
+74     | Training Step      | 0.0436     | 1283.01    | 2002.05   
+74     | Backward Process   | 0.2558     | 1284.82    | 388.45    
+------------------------------------------------------------------
+89     | Noise Addition     | 0.0017     | 1283.12    | 40.29     
+89     | Model Pass         | 0.0218     | 1283.12    | 350.75    
+89     | Training Step      | 0.0435     | 1283.12    | 2001.95   
+89     | Backward Process   | 0.2485     | 1284.91    | 388.35    
+------------------------------------------------------------------
+94     | Noise Addition     | 0.0017     | 1283.22    | 40.32     
+94     | Model Pass         | 0.0221     | 1283.22    | 350.78    
+94     | Training Step      | 0.0431     | 1283.22    | 2001.98   
+94     | Backward Process   | 0.2520     | 1284.50    | 388.38    
+------------------------------------------------------------------
+
+--- Aggregated Results (Mean ± Std) ---
+Category           | Time (s)             | RAM (MB)             | GPU (MB)            
+---------------------------------------------------------------------------------------
+Noise Addition     | 0.0017 ± 0.0001      | 1271.10 ± 34.69      | 39.52 ± 2.45        
+Model Pass         | 0.0302 ± 0.0245      | 1278.54 ± 12.40      | 349.98 ± 2.45       
+Training Step      | 0.0477 ± 0.0124      | 1281.58 ± 3.45       | 2001.82 ± 0.29      
+Backward Process   | 0.2533 ± 0.0047      | 1283.81 ± 1.66       | 388.77 ± 0.58       
+
+--- Profiling Small Social Networks ---
+Max Nodes: 50, Batch Size: 128, Xdim: 9, Edim: 4
+Profiling with 10 steps over 10 seeds: [10, 23, 27, 36, 42, 58, 61, 74, 89, 94]
+Device: cuda
+Running Seed 10...Running Seed 23...Running Seed 27...Running Seed 36...Running Seed 42...Running Seed 58...Running Seed 61...Running Seed 74...Running Seed 89...Running Seed 94...
+
+=== Profiling Results ===
+
+--- Specific Results per Seed ---
+Seed   | Category           | Time (s)   | RAM (MB)   | GPU (MB)  
+------------------------------------------------------------------
+10     | Noise Addition     | 0.0018     | 1282.84    | 100.12    
+10     | Model Pass         | 0.1026     | 1282.84    | 2100.67   
+10     | Training Step      | 0.1254     | 1282.91    | 11866.32  
+10     | Backward Process   | 1.0872     | 1290.45    | 2235.02   
+------------------------------------------------------------------
+23     | Noise Addition     | 0.0019     | 1283.03    | 100.24    
+23     | Model Pass         | 0.1016     | 1283.03    | 2100.70   
+23     | Training Step      | 0.1234     | 1283.05    | 11865.53  
+23     | Backward Process   | 1.0864     | 1284.25    | 2235.41   
+------------------------------------------------------------------
+27     | Noise Addition     | 0.0016     | 1283.32    | 100.26    
+27     | Model Pass         | 0.1025     | 1283.32    | 2101.97   
+27     | Training Step      | 0.1244     | 1283.33    | 11865.56  
+27     | Backward Process   | 1.0911     | 1283.89    | 2235.14   
+------------------------------------------------------------------
+36     | Noise Addition     | 0.0018     | 1283.60    | 100.26    
+36     | Model Pass         | 0.1026     | 1283.60    | 2100.72   
+36     | Training Step      | 0.1252     | 1283.62    | 11865.56  
+36     | Backward Process   | 1.0941     | 1284.14    | 2235.44   
+------------------------------------------------------------------
+42     | Noise Addition     | 0.0016     | 1283.05    | 100.29    
+42     | Model Pass         | 0.1043     | 1283.05    | 2102.00   
+42     | Training Step      | 0.1260     | 1283.05    | 11865.58  
+42     | Backward Process   | 1.1119     | 1284.48    | 2235.17   
+------------------------------------------------------------------
+58     | Noise Addition     | 0.0016     | 1283.58    | 100.32    
+58     | Model Pass         | 0.1005     | 1283.58    | 2100.77   
+58     | Training Step      | 0.1219     | 1283.59    | 11865.61  
+58     | Backward Process   | 1.0666     | 1290.69    | 2235.49   
+------------------------------------------------------------------
+61     | Noise Addition     | 0.0014     | 1283.19    | 100.32    
+61     | Model Pass         | 0.1005     | 1283.19    | 2102.02   
+61     | Training Step      | 0.1227     | 1283.19    | 11865.61  
+61     | Backward Process   | 1.0691     | 1283.88    | 2235.19   
+------------------------------------------------------------------
+74     | Noise Addition     | 0.0016     | 1293.67    | 100.34    
+74     | Model Pass         | 0.1014     | 1293.67    | 2100.80   
+74     | Training Step      | 0.1241     | 1293.70    | 11865.64  
+74     | Backward Process   | 1.0778     | 1286.26    | 2235.51   
+------------------------------------------------------------------
+89     | Noise Addition     | 0.0014     | 1294.07    | 100.37    
+89     | Model Pass         | 0.1006     | 1294.07    | 2102.07   
+89     | Training Step      | 0.1226     | 1294.10    | 11865.66  
+89     | Backward Process   | 1.0692     | 1284.87    | 2235.25   
+------------------------------------------------------------------
+94     | Noise Addition     | 0.0016     | 1293.81    | 100.37    
+94     | Model Pass         | 0.1005     | 1293.81    | 2100.82   
+94     | Training Step      | 0.1227     | 1294.27    | 11865.66  
+94     | Backward Process   | 1.0705     | 1287.65    | 2235.54   
+------------------------------------------------------------------
+
+--- Aggregated Results (Mean ± Std) ---
+Category           | Time (s)             | RAM (MB)             | GPU (MB)            
+---------------------------------------------------------------------------------------
+Noise Addition     | 0.0016 ± 0.0001      | 1286.42 ± 4.87       | 100.29 ± 0.07       
+Model Pass         | 0.1017 ± 0.0012      | 1286.42 ± 4.87       | 2101.26 ± 0.62      
+Training Step      | 0.1238 ± 0.0013      | 1286.48 ± 4.95       | 11865.67 ± 0.22     
+Backward Process   | 1.0824 ± 0.0137      | 1286.06 ± 2.52       | 2235.32 ± 0.17      
+
+--- Profiling Medium Graphs ---
+Max Nodes: 100, Batch Size: 128, Xdim: 9, Edim: 4
+Profiling with 10 steps over 10 seeds: [10, 23, 27, 36, 42, 58, 61, 74, 89, 94]
+Device: cuda
+Running Seed 10...Running Seed 23...Running Seed 27...Running Seed 36...Running Seed 42...Running Seed 58...Running Seed 61...Running Seed 74...Running Seed 89...Running Seed 94...
+
+=== Profiling Results ===
+
+--- Specific Results per Seed ---
+Seed   | Category           | Time (s)   | RAM (MB)   | GPU (MB)  
+------------------------------------------------------------------
+10     | Noise Addition     | 0.0054     | 1294.59    | 306.91    
+10     | Model Pass         | 0.3867     | 1294.59    | 7734.26   
+10     | Training Step      | 0.4202     | 1294.67    | 46058.45  
+10     | Backward Process   | 4.0847     | 1292.96    | 8195.65   
+------------------------------------------------------------------
+23     | Noise Addition     | 0.0055     | 1294.44    | 306.94    
+23     | Model Pass         | 0.3915     | 1294.45    | 7734.28   
+23     | Training Step      | 0.4220     | 1294.48    | 46058.47  
+23     | Backward Process   | 4.0988     | 1304.75    | 8195.68   
+------------------------------------------------------------------
+27     | Noise Addition     | 0.0054     | 1304.75    | 306.94    
+27     | Model Pass         | 0.3890     | 1304.75    | 7734.28   
+27     | Training Step      | 0.4197     | 1304.75    | 46058.47  
+27     | Backward Process   | 4.0684     | 1295.03    | 8195.68   
+------------------------------------------------------------------
+36     | Noise Addition     | 0.0055     | 1295.09    | 306.96    
+36     | Model Pass         | 0.3888     | 1295.09    | 7734.31   
+36     | Training Step      | 0.4197     | 1295.11    | 46058.50  
+36     | Backward Process   | 4.0727     | 1295.08    | 8195.70   
+------------------------------------------------------------------
+42     | Noise Addition     | 0.0056     | 1295.13    | 306.99    
+42     | Model Pass         | 0.3807     | 1295.17    | 7734.33   
+42     | Training Step      | 0.4119     | 1295.21    | 46058.52  
+42     | Backward Process   | 3.9979     | 1295.30    | 8195.73   
+------------------------------------------------------------------
+58     | Noise Addition     | 0.0054     | 1296.23    | 306.99    
+58     | Model Pass         | 0.3808     | 1296.23    | 7734.33   
+58     | Training Step      | 0.4117     | 1296.37    | 46058.52  
+58     | Backward Process   | 3.9945     | 1297.95    | 8195.73   
+------------------------------------------------------------------
+61     | Noise Addition     | 0.0045     | 1297.96    | 307.01    
+61     | Model Pass         | 0.3963     | 1297.96    | 7734.36   
+61     | Training Step      | 0.4279     | 1298.05    | 46058.55  
+61     | Backward Process   | 4.1547     | 1295.99    | 8195.75   
+------------------------------------------------------------------
+74     | Noise Addition     | 0.0055     | 1296.68    | 307.04    
+74     | Model Pass         | 0.3806     | 1296.68    | 7734.38   
+74     | Training Step      | 0.4112     | 1296.73    | 46058.57  
+74     | Backward Process   | 3.9923     | 1298.05    | 8195.78   
+------------------------------------------------------------------
+89     | Noise Addition     | 0.0045     | 1298.05    | 307.04    
+89     | Model Pass         | 0.3805     | 1298.05    | 7734.38   
+89     | Training Step      | 0.4112     | 1298.05    | 46058.57  
+89     | Backward Process   | 3.9916     | 1295.73    | 8195.78   
+------------------------------------------------------------------
+94     | Noise Addition     | 0.0045     | 1295.79    | 307.06    
+94     | Model Pass         | 0.3792     | 1295.79    | 7734.41   
+94     | Training Step      | 0.4101     | 1295.79    | 46058.60  
+94     | Backward Process   | 3.9815     | 1296.32    | 8195.80   
+------------------------------------------------------------------
+
+--- Aggregated Results (Mean ± Std) ---
+Category           | Time (s)             | RAM (MB)             | GPU (MB)            
+---------------------------------------------------------------------------------------
+Noise Addition     | 0.0052 ± 0.0005      | 1296.87 ± 2.89       | 306.99 ± 0.05       
+Model Pass         | 0.3854 ± 0.0056      | 1296.88 ± 2.89       | 7734.33 ± 0.05      
+Training Step      | 0.4166 ± 0.0058      | 1296.92 ± 2.88       | 46058.52 ± 0.05     
+Backward Process   | 4.0437 ± 0.0568      | 1296.72 ± 3.02       | 8195.73 ± 0.05      
+
+--- Profiling Very Large Graphs ---
+Max Nodes: 200, Batch Size: 128, Xdim: 9, Edim: 4
+Profiling with 10 steps over 10 seeds: [10, 23, 27, 36, 42, 58, 61, 74, 89, 94]
+Device: cuda
+Running Seed 10...\nError in Training Step: CUDA out of memory. Tried to allocate 4.88 GiB. GPU 0 has a total capacity of 79.25 GiB of which 1.75 GiB is free. Including non-PyTorch memory, this process has 77.50 GiB memory in use. Of the allocated memory 74.12 GiB is allocated by PyTorch, and 2.88 GiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+Running Seed 23...\nError in Training Step: CUDA out of memory. Tried to allocate 4.88 GiB. GPU 0 has a total capacity of 79.25 GiB of which 1.75 GiB is free. Including non-PyTorch memory, this process has 77.50 GiB memory in use. Of the allocated memory 74.12 GiB is allocated by PyTorch, and 2.88 GiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+Running Seed 27...\nError in Training Step: CUDA out of memory. Tried to allocate 4.88 GiB. GPU 0 has a total capacity of 79.25 GiB of which 1.75 GiB is free. Including non-PyTorch memory, this process has 77.50 GiB memory in use. Of the allocated memory 74.12 GiB is allocated by PyTorch, and 2.88 GiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+Running Seed 36...\nError in Training Step: CUDA out of memory. Tried to allocate 4.88 GiB. GPU 0 has a total capacity of 79.25 GiB of which 1.75 GiB is free. Including non-PyTorch memory, this process has 77.50 GiB memory in use. Of the allocated memory 74.12 GiB is allocated by PyTorch, and 2.88 GiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+Running Seed 42...\nError in Training Step: CUDA out of memory. Tried to allocate 4.88 GiB. GPU 0 has a total capacity of 79.25 GiB of which 1.75 GiB is free. Including non-PyTorch memory, this process has 77.50 GiB memory in use. Of the allocated memory 74.12 GiB is allocated by PyTorch, and 2.88 GiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+Running Seed 58...\nError in Training Step: CUDA out of memory. Tried to allocate 4.88 GiB. GPU 0 has a total capacity of 79.25 GiB of which 1.75 GiB is free. Including non-PyTorch memory, this process has 77.50 GiB memory in use. Of the allocated memory 74.12 GiB is allocated by PyTorch, and 2.88 GiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+Running Seed 61...\nError in Training Step: CUDA out of memory. Tried to allocate 4.88 GiB. GPU 0 has a total capacity of 79.25 GiB of which 1.75 GiB is free. Including non-PyTorch memory, this process has 77.50 GiB memory in use. Of the allocated memory 74.12 GiB is allocated by PyTorch, and 2.88 GiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+Running Seed 74...\nError in Training Step: CUDA out of memory. Tried to allocate 4.88 GiB. GPU 0 has a total capacity of 79.25 GiB of which 1.75 GiB is free. Including non-PyTorch memory, this process has 77.50 GiB memory in use. Of the allocated memory 74.12 GiB is allocated by PyTorch, and 2.88 GiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+Running Seed 89...\nError in Training Step: CUDA out of memory. Tried to allocate 4.88 GiB. GPU 0 has a total capacity of 79.25 GiB of which 1.75 GiB is free. Including non-PyTorch memory, this process has 77.50 GiB memory in use. Of the allocated memory 74.12 GiB is allocated by PyTorch, and 2.88 GiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+Running Seed 94...\nError in Training Step: CUDA out of memory. Tried to allocate 4.88 GiB. GPU 0 has a total capacity of 79.25 GiB of which 1.75 GiB is free. Including non-PyTorch memory, this process has 77.50 GiB memory in use. Of the allocated memory 74.12 GiB is allocated by PyTorch, and 2.88 GiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+
+
+=== Profiling Results ===
+
+--- Specific Results per Seed ---
+Seed   | Category           | Time (s)   | RAM (MB)   | GPU (MB)  
+------------------------------------------------------------------
+10     | Noise Addition     | 0.0107     | 1300.54    | 1130.19   
+10     | Model Pass         | 1.4868     | 1300.78    | 30692.60  
+10     | Training Step      | nan        | nan        | nan       
+10     | Backward Process   | 15.9339    | 1333.25    | 31048.05  
+------------------------------------------------------------------
+23     | Noise Addition     | 0.0105     | 1333.25    | 1130.19   
+23     | Model Pass         | 1.4966     | 1333.25    | 30692.60  
+23     | Training Step      | nan        | nan        | nan       
+23     | Backward Process   | 15.9390    | 1334.61    | 31048.05  
+------------------------------------------------------------------
+27     | Noise Addition     | 0.0105     | 1334.66    | 1130.21   
+27     | Model Pass         | 1.5769     | 1334.68    | 30692.63  
+27     | Training Step      | nan        | nan        | nan       
+27     | Backward Process   | 16.7481    | 1334.28    | 31048.07  
+------------------------------------------------------------------
+36     | Noise Addition     | 0.0105     | 1334.80    | 1130.24   
+36     | Model Pass         | 1.5300     | 1334.80    | 30692.65  
+36     | Training Step      | nan        | nan        | nan       
+36     | Backward Process   | 16.2594    | 1334.61    | 31048.10  
+------------------------------------------------------------------
+42     | Noise Addition     | 0.0105     | 1334.61    | 1130.24   
+42     | Model Pass         | 1.5297     | 1334.61    | 30692.65  
+42     | Training Step      | nan        | nan        | nan       
+42     | Backward Process   | 16.2675    | 1334.55    | 31048.10  
+------------------------------------------------------------------
+58     | Noise Addition     | 0.0104     | 1334.60    | 1130.26   
+58     | Model Pass         | 1.4973     | 1334.60    | 30692.68  
+58     | Training Step      | nan        | nan        | nan       
+58     | Backward Process   | 15.9460    | 1334.94    | 31048.12  
+------------------------------------------------------------------
+61     | Noise Addition     | 0.0105     | 1335.03    | 1130.29   
+61     | Model Pass         | 1.4999     | 1335.03    | 30692.70  
+61     | Training Step      | nan        | nan        | nan       
+61     | Backward Process   | 15.9795    | 1334.75    | 31048.15  
+------------------------------------------------------------------
+74     | Noise Addition     | 0.0105     | 1334.75    | 1130.29   
+74     | Model Pass         | 1.4998     | 1334.75    | 30692.70  
+74     | Training Step      | nan        | nan        | nan       
+74     | Backward Process   | 15.9833    | 1335.89    | 31048.15  
+------------------------------------------------------------------
+89     | Noise Addition     | 0.0099     | 1335.93    | 1130.31   
+89     | Model Pass         | 1.5335     | 1335.97    | 30692.73  
+89     | Training Step      | nan        | nan        | nan       
+89     | Backward Process   | 16.3226    | 1336.23    | 31048.17  
+------------------------------------------------------------------
+94     | Noise Addition     | 0.0099     | 1336.32    | 1130.34   
+94     | Model Pass         | 1.5335     | 1336.32    | 30692.75  
+94     | Training Step      | nan        | nan        | nan       
+94     | Backward Process   | 16.3110    | 1336.08    | 31048.20  
+------------------------------------------------------------------
+
+--- Aggregated Results (Mean ± Std) ---
+Category           | Time (s)             | RAM (MB)             | GPU (MB)            
+---------------------------------------------------------------------------------------
+Noise Addition     | 0.0104 ± 0.0003      | 1331.45 ± 10.33      | 1130.26 ± 0.05      
+Model Pass         | 1.5184 ± 0.0260      | 1331.48 ± 10.26      | 30692.67 ± 0.05     
+Training Step      | nan ± nan            | nan ± nan            | nan ± nan           
+Backward Process   | 16.1690 ± 0.2501     | 1334.92 ± 0.87       | 31048.12 ± 0.05     
+
+--- Profiling Complex Edge Types ---
+Max Nodes: 50, Batch Size: 128, Xdim: 9, Edim: 8
+Profiling with 10 steps over 10 seeds: [10, 23, 27, 36, 42, 58, 61, 74, 89, 94]
+Device: cuda
+Running Seed 10...Running Seed 23...Running Seed 27...Running Seed 36...Running Seed 42...Running Seed 58...Running Seed 61...Running Seed 74...Running Seed 89...Running Seed 94...
+
+=== Profiling Results ===
+
+--- Specific Results per Seed ---
+Seed   | Category           | Time (s)   | RAM (MB)   | GPU (MB)  
+------------------------------------------------------------------
+10     | Noise Addition     | 0.0017     | 1336.08    | 163.24    
+10     | Model Pass         | 0.1038     | 1336.08    | 2131.26   
+10     | Training Step      | 0.1258     | 1336.09    | 11900.05  
+10     | Backward Process   | 1.1289     | 1336.11    | 2289.21   
+------------------------------------------------------------------
+23     | Noise Addition     | 0.0015     | 1336.11    | 163.26    
+23     | Model Pass         | 0.1008     | 1336.11    | 2131.28   
+23     | Training Step      | 0.1228     | 1336.20    | 11900.07  
+23     | Backward Process   | 1.1001     | 1336.20    | 2288.94   
+------------------------------------------------------------------
+27     | Noise Addition     | 0.0015     | 1336.20    | 163.29    
+27     | Model Pass         | 0.1028     | 1336.20    | 2131.31   
+27     | Training Step      | 0.1247     | 1336.20    | 11900.10  
+27     | Backward Process   | 1.1192     | 1336.34    | 2288.97   
+------------------------------------------------------------------
+36     | Noise Addition     | 0.0015     | 1336.34    | 163.29    
+36     | Model Pass         | 0.1029     | 1336.34    | 2131.31   
+36     | Training Step      | 0.1247     | 1336.34    | 11900.10  
+36     | Backward Process   | 1.1232     | 1345.89    | 2288.97   
+------------------------------------------------------------------
+42     | Noise Addition     | 0.0015     | 1346.12    | 163.31    
+42     | Model Pass         | 0.1049     | 1346.12    | 2131.34   
+42     | Training Step      | 0.1268     | 1346.12    | 11900.13  
+42     | Backward Process   | 1.1403     | 1346.12    | 2288.99   
+------------------------------------------------------------------
+58     | Noise Addition     | 0.0015     | 1346.12    | 163.34    
+58     | Model Pass         | 0.1009     | 1346.12    | 2131.36   
+58     | Training Step      | 0.1231     | 1346.12    | 11900.15  
+58     | Backward Process   | 1.0996     | 1346.12    | 2289.02   
+------------------------------------------------------------------
+61     | Noise Addition     | 0.0015     | 1346.12    | 163.34    
+61     | Model Pass         | 0.1009     | 1346.12    | 2131.36   
+61     | Training Step      | 0.1228     | 1346.12    | 11900.15  
+61     | Backward Process   | 1.0999     | 1346.12    | 2289.02   
+------------------------------------------------------------------
+74     | Noise Addition     | 0.0015     | 1346.38    | 163.36    
+74     | Model Pass         | 0.1008     | 1346.38    | 2131.39   
+74     | Training Step      | 0.1225     | 1346.38    | 11900.18  
+74     | Backward Process   | 1.0985     | 1346.38    | 2289.04   
+------------------------------------------------------------------
+89     | Noise Addition     | 0.0015     | 1346.38    | 163.39    
+89     | Model Pass         | 0.1031     | 1346.38    | 2131.41   
+89     | Training Step      | 0.1248     | 1346.38    | 11900.20  
+89     | Backward Process   | 1.1222     | 1346.38    | 2289.07   
+------------------------------------------------------------------
+94     | Noise Addition     | 0.0015     | 1346.38    | 163.39    
+94     | Model Pass         | 0.1033     | 1346.38    | 2131.41   
+94     | Training Step      | 0.1250     | 1346.38    | 11900.20  
+94     | Backward Process   | 1.1279     | 1346.98    | 2289.07   
+------------------------------------------------------------------
+
+--- Aggregated Results (Mean ± Std) ---
+Category           | Time (s)             | RAM (MB)             | GPU (MB)            
+---------------------------------------------------------------------------------------
+Noise Addition     | 0.0016 ± 0.0001      | 1342.22 ± 4.94       | 163.32 ± 0.05       
+Model Pass         | 0.1024 ± 0.0014      | 1342.22 ± 4.94       | 2131.34 ± 0.05      
+Training Step      | 0.1243 ± 0.0014      | 1342.24 ± 4.92       | 11900.13 ± 0.05     
+Backward Process   | 1.1160 ± 0.0144      | 1343.27 ± 4.62       | 2289.03 ± 0.07      
+
+--- Profiling Complex Node Types ---
+Max Nodes: 50, Batch Size: 128, Xdim: 20, Edim: 4
+Profiling with 10 steps over 10 seeds: [10, 23, 27, 36, 42, 58, 61, 74, 89, 94]
+Device: cuda
+Running Seed 10...Running Seed 23...Running Seed 27...Running Seed 36...Running Seed 42...Running Seed 58...Running Seed 61...Running Seed 74...Running Seed 89...Running Seed 94...
+
+=== Profiling Results ===
+
+--- Specific Results per Seed ---
+Seed   | Category           | Time (s)   | RAM (MB)   | GPU (MB)  
+------------------------------------------------------------------
+10     | Noise Addition     | 0.0018     | 1346.98    | 103.12    
+10     | Model Pass         | 0.1117     | 1347.03    | 2102.98   
+10     | Training Step      | 0.1342     | 1347.04    | 11868.90  
+10     | Backward Process   | 1.1770     | 1347.08    | 2239.46   
+------------------------------------------------------------------
+23     | Noise Addition     | 0.0018     | 1347.08    | 103.24    
+23     | Model Pass         | 0.1109     | 1347.16    | 2103.01   
+23     | Training Step      | 0.1336     | 1347.16    | 11868.11  
+23     | Backward Process   | 1.1755     | 1347.19    | 2239.54   
+------------------------------------------------------------------
+27     | Noise Addition     | 0.0016     | 1347.19    | 103.24    
+27     | Model Pass         | 0.1108     | 1347.19    | 2104.26   
+27     | Training Step      | 0.1336     | 1347.19    | 11868.11  
+27     | Backward Process   | 1.1734     | 1347.20    | 2239.85   
+------------------------------------------------------------------
+36     | Noise Addition     | 0.0018     | 1347.20    | 103.27    
+36     | Model Pass         | 0.1110     | 1347.20    | 2103.03   
+36     | Training Step      | 0.1336     | 1347.20    | 11868.14  
+36     | Backward Process   | 1.1751     | 1347.20    | 2239.57   
+------------------------------------------------------------------
+42     | Noise Addition     | 0.0016     | 1347.20    | 103.29    
+42     | Model Pass         | 0.1107     | 1347.38    | 2104.31   
+42     | Training Step      | 0.1335     | 1347.38    | 11868.16  
+42     | Backward Process   | 1.1692     | 1347.38    | 2239.90   
+------------------------------------------------------------------
+58     | Noise Addition     | 0.0018     | 1347.38    | 103.29    
+58     | Model Pass         | 0.1106     | 1347.38    | 2103.06   
+58     | Training Step      | 0.1332     | 1347.38    | 11868.16  
+58     | Backward Process   | 1.1697     | 1347.42    | 2239.59   
+------------------------------------------------------------------
+61     | Noise Addition     | 0.0016     | 1347.47    | 103.32    
+61     | Model Pass         | 0.1106     | 1347.47    | 2104.33   
+61     | Training Step      | 0.1337     | 1347.51    | 11868.19  
+61     | Backward Process   | 1.3158     | 1347.53    | 2239.93   
+------------------------------------------------------------------
+74     | Noise Addition     | 0.0018     | 1347.57    | 102.53    
+74     | Model Pass         | 0.1111     | 1347.57    | 2102.29   
+74     | Training Step      | 0.1333     | 1347.57    | 11867.40  
+74     | Backward Process   | 1.1752     | 1347.57    | 2238.83   
+------------------------------------------------------------------
+89     | Noise Addition     | 0.0016     | 1347.57    | 102.53    
+89     | Model Pass         | 0.1113     | 1347.57    | 2103.54   
+89     | Training Step      | 0.1336     | 1347.57    | 11867.40  
+89     | Backward Process   | 1.1751     | 1347.57    | 2239.14   
+------------------------------------------------------------------
+94     | Noise Addition     | 0.0017     | 1347.57    | 102.56    
+94     | Model Pass         | 0.1112     | 1347.57    | 2102.32   
+94     | Training Step      | 0.1332     | 1347.57    | 11867.43  
+94     | Backward Process   | 1.1754     | 1347.57    | 2238.86   
+------------------------------------------------------------------
+
+--- Aggregated Results (Mean ± Std) ---
+Category           | Time (s)             | RAM (MB)             | GPU (MB)            
+---------------------------------------------------------------------------------------
+Noise Addition     | 0.0017 ± 0.0001      | 1347.32 ± 0.21       | 103.04 ± 0.33       
+Model Pass         | 0.1110 ± 0.0003      | 1347.35 ± 0.19       | 2103.31 ± 0.73      
+Training Step      | 0.1336 ± 0.0003      | 1347.36 ± 0.19       | 11868.00 ± 0.45     
+Backward Process   | 1.1881 ± 0.0426      | 1347.37 ± 0.18       | 2239.47 ± 0.38      
