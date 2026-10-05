@@ -158,11 +158,10 @@ def table_markdown(rows, table):
         if (r["model"], r["steps"]) not in steps:
             steps.append((r["model"], r["steps"]))
     seeds = ", ".join(str(n) for n in sorted({r["n_seeds"] for r in rows}))
-    lines += [
-        "",
-        "Diffusion steps: " + ", ".join(f"{m} {s}" for m, s in steps) + f". Seeds per row: {seeds}. n/a: every seed failed (CUDA out of memory in the original logs).",
-        "",
-    ]
+    note = "Diffusion steps: " + ", ".join(f"{m} {s}" for m, s in steps) + f". Seeds per row: {seeds}."
+    if any(np.isnan(r["time_mean"]) for r in rows):
+        note += " n/a: every seed failed (CUDA out of memory in the original logs)."
+    lines += ["", note, ""]
     return "\n".join(lines)
 
 
