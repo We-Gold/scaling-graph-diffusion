@@ -1,0 +1,40 @@
+# Tiny CPU config for tests and quick checks. The toy dataset is built in memory (no download).
+# VLB path: --set diffusion.loss=vlb --set eval.sampler=posterior --set plots.edge_count_sampler=posterior
+name: smoke
+seed: 0
+device: cpu
+
+model:
+  name: query_edges
+  hidden_size: 16
+  gnn_layers: 1
+  gnn_iterations: 1
+  decoder_layers: 1
+  dropout: 0.0
+  edge_fraction: 0.3
+
+diffusion:
+  T: 10
+  loss: ce
+
+train:
+  epochs: 1
+  lr: 0.001
+  log_interval: 1
+
+eval:
+  num_samples: 4
+  batch_size: 4
+  temperature: 0.5
+  sampler: heuristic
+  gen_edge_slots: null
+  max_ref_graphs: 50
+
+plots:
+  edge_count_num_samples: 4
+  regen_num_samples: 4
+
+datasets:
+  toy: {M_max: 12, batch_size: 4}
+  planar: {M_max: 200, batch_size: 8, train_fraction: 0.1}
+  zinc250k: {M_max: 30, batch_size: 4, train_fraction: 0.5}

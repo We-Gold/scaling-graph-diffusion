@@ -1,0 +1,50 @@
+# DEFAULT. Reproduces the 2026-03-03 runs behind report Figs 8-9 and the Scale-MGD rows of
+# Tables 14-15: query-edge model, CE loss with Bernoulli masking (linear alphas), heuristic
+# predict-then-remask sampler. This is NOT the report's Eq. 29 / Alg. 2-3 (see vlb_query_edges.yaml).
+name: ce_query_edges
+seed: 0            # new; the original runs set no seed
+device: auto       # cuda > mps > cpu
+
+model:
+  name: query_edges
+  hidden_size: 128
+  gnn_layers: 4      # L_mp
+  gnn_iterations: 5  # L_enc
+  decoder_layers: 4
+  dropout: 0.2
+  edge_fraction: 0.3
+
+diffusion:
+  T: 100
+  loss: ce
+  ce_alpha_start: 0.9999
+  ce_alpha_end: 0.0001
+  atomic_edges: true
+
+train:
+  epochs: 20
+  lr: 0.001
+  grad_clip: 1.0
+  log_interval: 50
+  use_edge_type_marginals: true
+
+eval:
+  num_samples: 64
+  batch_size: 32
+  temperature: 0.5
+  sampler: heuristic
+  gen_edge_slots: 100   # hardcoded in the original code; kept to reproduce Table 15 / Fig 9
+  skip_rbf: false
+  ref_splits: [train, test]
+  max_ref_graphs: 1000
+
+plots:
+  edge_count_sampler: heuristic_argmax  # Fig 8 in the original always used this
+  edge_count_num_samples: 20
+  regen_num_samples: 64
+  figsize: [5, 3]
+
+datasets:
+  zinc250k: {M_max: 100, batch_size: 64, train_fraction: 0.02}
+  planar: {M_max: 200, batch_size: 64}
+  ego: {M_max: 500, batch_size: 4}

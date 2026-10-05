@@ -1,0 +1,57 @@
+# Follows the report text (sec. 4.1.2-4.1.6): absorbing + uniform schedule (Eq. 29), atomic
+# edge masking, VLB with x0 marginalization + adaptive auxiliary CE (Eq. 33-36, Alg. 2), and
+# ancestral posterior sampling (Alg. 3). From commit a3a980b. Never run at full scale; no
+# report numbers come from this config.
+name: vlb_query_edges
+seed: 0
+device: auto
+
+model:
+  name: query_edges
+  hidden_size: 128
+  gnn_layers: 4
+  gnn_iterations: 5
+  decoder_layers: 4
+  dropout: 0.2
+  edge_fraction: 0.3
+
+diffusion:
+  T: 100
+  loss: vlb
+  ce_alpha_start: 0.9999   # only used by the heuristic samplers, not by this config
+  ce_alpha_end: 0.0001
+  att_1: 0.99999
+  att_T: 0.000001
+  ctt_1: 0.000001
+  ctt_T: 0.99999
+  atomic_edges: true
+  aux_loss_weight: 0.0001
+  adaptive_aux: true
+
+train:
+  epochs: 20
+  lr: 0.001
+  grad_clip: 1.0
+  log_interval: 50
+  use_edge_type_marginals: true
+
+eval:
+  num_samples: 64
+  batch_size: 32
+  temperature: 0.5
+  sampler: posterior
+  gen_edge_slots: null   # use the dataset M_max
+  skip_rbf: false
+  ref_splits: [train, test]
+  max_ref_graphs: 1000
+
+plots:
+  edge_count_sampler: posterior
+  edge_count_num_samples: 20
+  regen_num_samples: 64
+  figsize: [5, 3]
+
+datasets:
+  zinc250k: {M_max: 100, batch_size: 64, train_fraction: 0.02}
+  planar: {M_max: 200, batch_size: 64}
+  ego: {M_max: 500, batch_size: 4}
