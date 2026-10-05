@@ -22,3 +22,7 @@ package = false
 [tool.uv.sources]
 scale-mgd = { workspace = true }
 mg-diff = { workspace = true }
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
