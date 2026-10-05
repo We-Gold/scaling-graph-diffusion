@@ -42,6 +42,7 @@ eval:
   sampler: posterior
   gen_edge_slots: null   # use the dataset M_max
   skip_rbf: false
+  legacy_single_bonds: false
   ref_splits: [train, test]
   max_ref_graphs: 1000
 

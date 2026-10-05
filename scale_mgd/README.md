@@ -73,9 +73,7 @@ Fig 8: `viz/regen/edge_count_dist.{png,pdf}`. Fig 9: `viz/regen/triangle_distrib
 
 Both use the query-edge network (edge fraction 0.3, hidden 128, 4 MP layers, 5 unmasking trials,
 4 decoder layers, dropout 0.2), 20 epochs, AdamW lr 1e-3, T = 100. Set `model.name: gnn` for the
-plain Alg. 1 network. So the report numbers come from a setting that differs from the report text:
-Bernoulli masking with linear alphas and a predict-then-remask sampler, not Eq. 29 and Alg. 3.
-The VLB config (from a3a980b) was never run at full scale.
+plain Alg. 1 network.
 
 ## Data
 
@@ -124,8 +122,10 @@ Known issues (kept as in the original, so the report runs can be reproduced):
   The code reports both. The Planar Reference row mixes two loaders: degree and cluster match the
   SPECTRE loader, spectre and RBF match the default loader (the only one ported). The Ego Reference RBF
   (0.009) matches no local run.
-- ZINC bonds: `reconstruct_molecule` compares RDKit bond types with strings, so every generated bond is
-  added as SINGLE. Table 14 validity is 0.00 in the report.
+- ZINC bonds: the original `reconstruct_molecule` compared RDKit bond types with strings, so every
+  generated bond was added as SINGLE. Table 14 was computed that way (validity 0.00 in the report).
+  This code uses the correct bond types by default. Set `eval.legacy_single_bonds: true` to reproduce
+  the original computation.
 - Query edges use `torch.randperm(n(n-1)/2)`, which is O(n^2) memory. Only the base model is profiled in 5.1.
 
 Changes from the original: one config and one dataset per call; failures exit non-zero; checkpoint

@@ -102,7 +102,7 @@ def run_experiment(cfg: Config, dataset_name: str, run_dir=None, datasets=None):
         SparseDiffMetricsStep(eval_dir, store_raw_tensors=is_molecule),
     ]
     if is_molecule:
-        steps.append(MoleculeValidityStep(eval_dir))
+        steps.append(MoleculeValidityStep(eval_dir, legacy_single_bonds=cfg.eval.legacy_single_bonds))
     steps += [
         EdgeCountPlotStep(viz_dir / "edge_count_dist.png", cfg.plots.edge_count_num_samples,
                           sampler=cfg.plots.edge_count_sampler, temperature=cfg.eval.temperature),

@@ -1,9 +1,11 @@
 """
 Molecule metrics for report Table 14 (ZINC250k validity, uniqueness, novelty).
 
-Known issue kept from the original code: for ZINC250k the bond vocabulary keys are RDKit
-BondType objects, but `reconstruct_molecule` compares them to the strings "DOUBLE", "TRIPLE",
-"AROMATIC". So every generated bond is added as a SINGLE bond. See README "Known issues".
+Bond types: for ZINC250k the bond vocabulary keys are RDKit BondType objects. The original
+code compared them to the strings "DOUBLE", "TRIPLE", "AROMATIC", so every generated bond
+became a SINGLE bond. Report Table 14 was computed that way. This code maps bond types
+correctly by default. Set `legacy_single_bonds=True` (config `eval.legacy_single_bonds`)
+to reproduce the original computation. See README "Known issues".
 """
 
 import torch
@@ -12,12 +14,21 @@ from rdkit.Chem.rdchem import BondType as BT
 
 _SPECIAL_TOKENS = {"MASK", "PAD", "UNK", "CLS", "SEP"}
 
+# Bond vocabulary keys are RDKit BondType objects (ZINC250k) or their names.
+_BOND_TYPES = {
+    BT.SINGLE: BT.SINGLE, "SINGLE": BT.SINGLE,
+    BT.DOUBLE: BT.DOUBLE, "DOUBLE": BT.DOUBLE,
+    BT.TRIPLE: BT.TRIPLE, "TRIPLE": BT.TRIPLE,
+    BT.AROMATIC: BT.AROMATIC, "AROMATIC": BT.AROMATIC,
+}
 
-def reconstruct_molecule(X, E, dataset, sanitize=False, ignore_mask=True):
+
+def reconstruct_molecule(X, E, dataset, sanitize=False, ignore_mask=True, legacy_single_bonds=False):
     """
     Build an RDKit molecule from node types X (N,) and edge slots E (M, 3) = [u, v, type].
     PAD nodes (and MASK nodes if ignore_mask) are skipped. MASK / NO_EDGE slots and duplicate
     edges are skipped. Returns an RDKit Mol, or None if RDKit fails.
+    legacy_single_bonds=True adds every bond as SINGLE, like the original code (Table 14).
     """
     idx_to_atom = {v: k for k, v in dataset.types.items()}
     idx_to_bond = {v: k for k, v in dataset.bonds.items()}
@@ -57,14 +68,10 @@ def reconstruct_molecule(X, E, dataset, sanitize=False, ignore_mask=True):
         if bond_label in ["PAD", "MASK", "NO_BOND"]:
             continue
 
-        # Original behavior: string comparison (see module docstring).
-        rd_bond = BT.SINGLE
-        if bond_label == "DOUBLE":
-            rd_bond = BT.DOUBLE
-        elif bond_label == "TRIPLE":
-            rd_bond = BT.TRIPLE
-        elif bond_label == "AROMATIC":
-            rd_bond = BT.AROMATIC
+        if legacy_single_bonds:
+            rd_bond = BT.SINGLE
+        else:
+            rd_bond = _BOND_TYPES.get(bond_label, BT.SINGLE)
 
         try:
             mol.AddBond(atom_map[u], atom_map[v], rd_bond)
@@ -104,7 +111,7 @@ def canonical_smiles_set(smiles_list):
     return out
 
 
-def molecule_metrics(raw_tensors, dataset, train_smiles=None):
+def molecule_metrics(raw_tensors, dataset, train_smiles=None, legacy_single_bonds=False):
     """
     Validity, uniqueness, novelty of generated molecules.
 
@@ -117,7 +124,7 @@ def molecule_metrics(raw_tensors, dataset, train_smiles=None):
     for x_np, e_np in raw_tensors:
         mol = reconstruct_molecule(
             torch.from_numpy(x_np).long(), torch.from_numpy(e_np).long(), dataset,
-            sanitize=True, ignore_mask=True,
+            sanitize=True, ignore_mask=True, legacy_single_bonds=legacy_single_bonds,
         )
         smi = mol_to_smiles(mol)
         if smi is not None:

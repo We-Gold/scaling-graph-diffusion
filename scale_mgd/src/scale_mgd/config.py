@@ -67,6 +67,8 @@ class EvalConfig:
     # null means "use the dataset M_max".
     gen_edge_slots: int | None = 100
     skip_rbf: bool = False
+    # True reproduces the original Table 14 computation, where every ZINC bond became SINGLE.
+    legacy_single_bonds: bool = False
     ref_splits: list[str] = field(default_factory=lambda: ["train", "test"])
     max_ref_graphs: int = 1000
 

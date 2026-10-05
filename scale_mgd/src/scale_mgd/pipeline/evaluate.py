@@ -88,9 +88,10 @@ class SparseDiffMetricsStep(PipelineStep):
 class MoleculeValidityStep(PipelineStep):
     """Validity / uniqueness / novelty with RDKit (Table 14). Needs store_raw_tensors=True upstream."""
 
-    def __init__(self, output_dir):
+    def __init__(self, output_dir, legacy_single_bonds=False):
         super().__init__("Molecule metrics (Table 14)")
         self.output_dir = output_dir
+        self.legacy_single_bonds = legacy_single_bonds
 
     def execute(self, context):
         ensure_generated(context, store_raw_tensors=True)
@@ -99,7 +100,10 @@ class MoleculeValidityStep(PipelineStep):
         if hasattr(dataset, "data") and "CAN_SMILES" in getattr(dataset.data, "columns", []):
             print("Canonicalizing training SMILES for novelty...")
             train_smiles = canonical_smiles_set(dataset.data["CAN_SMILES"].astype(str).values)
-        metrics = molecule_metrics(context["gen_raw_tensors"], dataset, train_smiles)
+        metrics = molecule_metrics(
+            context["gen_raw_tensors"], dataset, train_smiles,
+            legacy_single_bonds=self.legacy_single_bonds,
+        )
         context["mol_metrics"] = metrics
         print(f"  validity {metrics['validity']:.4f}  uniqueness {metrics['uniqueness']:.4f}  "
               f"novelty {metrics['novelty']:.4f}  ({metrics['valid_count']}/{metrics['total']} valid)")
