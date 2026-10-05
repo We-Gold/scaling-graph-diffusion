@@ -3,7 +3,7 @@ from torch.nn import functional as F
 import numpy as np
 import math
 
-from src.utils import PlaceHolder
+from digress.utils import PlaceHolder
 
 
 def sum_except_batch(x):

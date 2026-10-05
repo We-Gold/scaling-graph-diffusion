@@ -1,5 +1,5 @@
 import torch
-from src import utils
+from digress import utils
 
 
 class DummyExtraFeatures:
