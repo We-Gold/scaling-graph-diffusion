@@ -2,13 +2,26 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 from mpl_toolkits.mplot3d import Axes3D
+import argparse
+from pathlib import Path
+
+# CLI. --frames is also the number of diffusion steps (one frame per step).
+parser = argparse.ArgumentParser(description="Render digress_graph.mp4 (toy discrete diffusion animation)")
+parser.add_argument("--frames", type=int, default=100, help="number of frames = diffusion steps")
+parser.add_argument("--dpi", type=int, default=300)
+parser.add_argument("--seed", type=int, default=0, help="seed for the toy data and noise")
+parser.add_argument("--out", type=Path, default=Path("outputs/digress_graph.mp4"))
+parser.add_argument("--show", action="store_true", help="also open a matplotlib window")
+args = parser.parse_args()
+args.out.parent.mkdir(parents=True, exist_ok=True)
+np.random.seed(args.seed)
 
 # --- Parameters ---
 num_nodes = 10
 num_node_types = 3
 num_edge_types = 3  # 0 = no edge, 1 = edge type 1, 2 = edge type 2
 
-timesteps = 100
+timesteps = args.frames
 
 # Probability distributions for node and edge types
 # Must sum to 1.0 for each
@@ -191,7 +204,8 @@ ani = FuncAnimation(fig, update, frames=timesteps, interval=100)
 
 # Save animation to video file
 # Requires ffmpeg: brew install ffmpeg (macOS) or apt-get install ffmpeg (Linux)
-ani.save('digress_graph_animation.mp4', writer='ffmpeg', fps=10, dpi=300)
-print("Animation saved to digress_graph_animation.mp4")
+ani.save(args.out, writer='ffmpeg', fps=10, dpi=args.dpi)
+print(f"Animation saved to {args.out}")
 
-plt.show()
+if args.show:
+    plt.show()
