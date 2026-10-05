@@ -2,7 +2,6 @@
 Service for loading and processing timestep data from noise and denoise processes.
 """
 import numpy as np
-import json
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 import logging
@@ -17,8 +16,8 @@ class TimestepService:
         self.noise_process_dir = data_dir / "noise_process" / "raw"
         self.denoise_process_dir = data_dir / "denoise_process" / "raw"
         
-        # Atom type mapping (based on common molecular elements)
-        self.atom_types = ['C', 'N', 'O', 'F', 'S', 'Cl', 'Br', 'P', 'I']
+        # DiGress MOSES atom_decoder (8 node classes in the npz files)
+        self.atom_types = ['C', 'N', 'S', 'O', 'F', 'Cl', 'Br', 'H']
         
         # Bond type mapping
         self.bond_types = {
@@ -80,11 +79,51 @@ class TimestepService:
         
         # Load NPZ file
         data = np.load(filepath)
-        
-        return {
-            'nodes': data['nodes'] if 'nodes' in data else data['X'],  # Support both formats
-            'edges': data['edges'] if 'edges' in data else data['E']
-        }
+        nodes = data['nodes'] if 'nodes' in data else data['X']  # Support both formats
+        edges = data['edges'] if 'edges' in data else data['E']
+
+        # Forward-process files for t >= 1 store class probabilities q(x_t | x_0)
+        # (class axis last), not indices. Turn them into one index graph.
+        if nodes.ndim == 2:
+            nodes, edges = self._sample_from_probs(nodes, edges)
+        elif process_type == "noise" and timestep == 0:
+            # step_00_original stores padding nodes as class 0 (C). Take the node
+            # mask from step 1, so padding does not render as extra atoms.
+            mask_file = process_dir / "step_01_noisy.npz"
+            if mask_file.exists():
+                mask = np.load(mask_file)['nodes'].sum(-1) > 0.5
+                nodes = np.where(mask, nodes, -1)
+
+        return {'nodes': nodes, 'edges': edges}
+
+    @staticmethod
+    def _sample_from_probs(node_probs: np.ndarray, edge_probs: np.ndarray, seed: int = 0):
+        """Sample one graph from per-node and per-edge class probabilities.
+
+        The same uniforms (fixed seed) are used for every timestep, with inverse-CDF
+        sampling. So each frame is a valid sample of q(x_t | x_0), and consecutive
+        frames differ only where the probabilities moved, which makes the noise
+        view change gradually. Padding nodes (all-zero rows) become -1.
+        (Simpler fallback: nodes = node_probs.argmax(-1), edges = edge_probs.argmax(-1).)
+        """
+        n = node_probs.shape[0]
+        rng = np.random.default_rng(seed)
+        u_nodes = rng.random(n)
+        u_edges = rng.random((n, n))
+
+        node_mask = node_probs.sum(-1) > 0.5
+        node_cdf = np.cumsum(node_probs, axis=-1)
+        nodes = (u_nodes[:, None] * node_cdf[:, -1:] > node_cdf).sum(-1)
+        nodes = np.minimum(nodes, node_probs.shape[-1] - 1)
+        nodes[~node_mask] = -1
+
+        edge_cdf = np.cumsum(edge_probs, axis=-1)
+        edges = (u_edges[..., None] * edge_cdf[..., -1:] > edge_cdf).sum(-1)
+        edges = np.minimum(edges, edge_probs.shape[-1] - 1)
+        edges[edge_probs.sum(-1) < 0.5] = 0  # diagonal and padding: no bond
+        edges = np.triu(edges, 1)
+        edges = edges + edges.T  # symmetric, from the upper triangle
+        return nodes, edges
     
     def convert_npz_to_molecule_format(self, npz_data: Dict) -> Tuple[List[Dict], List[Dict]]:
         """
@@ -164,8 +203,8 @@ class TimestepService:
     def _get_atomic_number(self, symbol: str) -> int:
         """Get atomic number for element symbol"""
         atomic_numbers = {
-            'C': 6, 'N': 7, 'O': 8, 'F': 9, 'S': 16,
-            'Cl': 17, 'Br': 35, 'P': 15, 'I': 53
+            'H': 1, 'C': 6, 'N': 7, 'O': 8, 'F': 9, 'S': 16,
+            'Cl': 17, 'Br': 35
         }
         return atomic_numbers.get(symbol, 6)
     

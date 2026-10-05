@@ -4,8 +4,11 @@ from fastapi.responses import Response
 from contextlib import asynccontextmanager
 from pathlib import Path
 import logging
+import os
+from rdkit.Chem import rdDepictor
+from rdkit.Chem.Draw import rdMolDraw2D
 from .timestep_service import TimestepService
-from .diffusion_data_processor import MoleculeVisualizer
+from .molecule import graph_to_mol
 
 logger = logging.getLogger("uvicorn")
 
@@ -23,26 +26,26 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(title="Molecule Diffusion Graph API", version="1.0.0", lifespan=lifespan)
 
-# Enable CORS for React frontend (allow both localhost and network access)
+# CORS for the Next.js frontend. Extra origins: VIZ_CORS_ORIGINS (comma separated).
+CORS_ORIGINS = ["http://localhost:3000", "http://127.0.0.1:3000"] + [
+    o.strip() for o in os.environ.get("VIZ_CORS_ORIGINS", "").split(",") if o.strip()
+]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:3000",
-        "http://localhost:5173",
-        "http://130.215.178.31:3000",  # Turing server network IP
-        "http://127.0.0.1:3000"
-    ],
+    allow_origins=CORS_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-DATA_DIR = Path(__file__).parent.parent.parent / "data"
-
-# Initialize timestep service (points to wpi-graph-ai-mqp-25-26 root for noise/denoise folders)
-# Path structure: backend/src/backend/main.py -> ../../../../ = wpi-graph-ai-mqp-25-26/
-PROJECT_ROOT = Path(__file__).parent.parent.parent.parent.parent
-timestep_service = TimestepService(PROJECT_ROOT)
+# Sample folder with noise_process/raw and denoise_process/raw. Default: viz/web/data/digress_moses_sample
+DATA_DIR = Path(
+    os.environ.get(
+        "VIZ_DATA_DIR",
+        Path(__file__).resolve().parents[3] / "data" / "digress_moses_sample",
+    )
+)
+timestep_service = TimestepService(DATA_DIR)
 
 @app.get("/")
 async def root():
@@ -114,7 +117,7 @@ async def get_timestep_svg(
         )
         
         # Create RDKit molecule
-        mol = MoleculeVisualizer.create_molecule_from_graph_data(atoms_data, bonds_data)
+        mol = graph_to_mol(atoms_data, bonds_data)
         
         if mol is None:
             raise HTTPException(
@@ -123,9 +126,6 @@ async def get_timestep_svg(
             )
         
         # Generate SVG
-        from rdkit.Chem import rdDepictor
-        from rdkit.Chem.Draw import rdMolDraw2D
-        
         rdDepictor.Compute2DCoords(mol)
         drawer = rdMolDraw2D.MolDraw2DSVG(width, height)
         drawer.DrawMolecule(mol)

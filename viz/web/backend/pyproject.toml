@@ -1,16 +1,18 @@
 [project]
-name = "backend"
+name = "viz-web-backend"
 version = "0.1.0"
-description = "Add your description here"
-readme = "README.md"
+description = "FastAPI backend for the DiGress timestep viewer (viz/web)"
 requires-python = ">=3.12"
 dependencies = [
     "fastapi>=0.117.1",
-    "matplotlib>=3.10.6",
-    "numpy>=2.3.3",
-    "pandas>=2.3.2",
-    "pyarrow>=21.0.0",
-    "pytest>=8.4.2",
-    "rdkit>=2025.3.6",
     "uvicorn>=0.37.0",
+    "numpy<2",
+    "rdkit>=2025.3.6",
 ]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/viz_backend"]

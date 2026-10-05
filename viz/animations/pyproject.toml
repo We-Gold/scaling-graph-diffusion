@@ -1,11 +1,13 @@
 [project]
-name = "diff-viz"
+name = "viz-animations"
 version = "0.1.0"
-description = "Add your description here"
-readme = "README.md"
+description = "Toy discrete diffusion animations (DiGress, MD4, hybrid) rendered to mp4"
 requires-python = ">=3.12"
 dependencies = [
     "matplotlib>=3.10.7",
     "networkx>=3.5",
-    "numpy>=2.3.4",
+    "numpy<2",
 ]
+
+[tool.uv]
+package = false
