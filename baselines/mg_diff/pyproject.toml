@@ -1,0 +1,20 @@
+[project]
+name = "mg-diff"
+version = "0.1.0"
+description = "MG-Diff reimplementation (scheduler + network) used by the 5.1 scaling benchmark"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "torch>=2.8,<2.9",
+    "numpy",
+]
+
+[dependency-groups]
+dev = ["pytest"]
+
+[build-system]
+requires = ["uv_build>=0.8,<0.13"]
+build-backend = "uv_build"
+
+[tool.uv.build-backend]
+module-name = "mg_diff"

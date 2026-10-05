@@ -1,3 +1,8 @@
+# Derived from DiGress (cvignac/DiGress, src/models/layers.py).
+# MIT License, Copyright (c) 2012-2022 Clement Vignac, Igor Krawczuk, Antoine Siraudin.
+# See LICENSE-DiGress.
+# Unchanged.
+
 import torch
 import torch.nn as nn
 

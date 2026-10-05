@@ -4,11 +4,15 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from .transformer_model import GraphTransformer
+from .transformer import GraphTransformer
 
 
 class D2GraphTransformer(nn.Module):
-    """Discrete-to-discrete graph transformer used by zinc250k training.
+    """MG-Diff denoising network: discrete embeddings on a DiGress GraphTransformer.
+
+    Written by the MQP team from the MG-Diff paper supplement (report 5.1, footnote 1).
+    `hidden_dims` / `hidden_mlp_dims` set the backbone sizes (report Table 1). When None,
+    the sizes are derived from d_model, num_heads and dff.
 
     Expects integer inputs:
       A: (batch, n) atom type indices

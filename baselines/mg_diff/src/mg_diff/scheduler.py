@@ -1,11 +1,18 @@
+# MG-Diff mask-and-replace discrete diffusion scheduler (report 3.1, used in 5.1).
+#
+# Adapted from microsoft/VQ-Diffusion (image_synthesis/modeling/transformers/diffusion_transformer.py),
+# MIT License, Copyright (c) Microsoft Corporation. See LICENSE-VQ-Diffusion.
+# The function names, the log-space q_pred / q_posterior / vb_stochastic loss, the auxiliary loss
+# and several comments match that file. Changes for MG-Diff: three token streams (atom A, charge C,
+# edge E) with one schedule each, symmetric edge noise and sampling, MASK class at index 0
+# (VQ-Diffusion puts it last), and different alpha_schedule end points.
+
 import math
-from inspect import isfunction
 
 import numpy as np
 import torch
 import torch.nn.functional as F
 from torch import nn
-from torch.cuda.amp import autocast
 
 eps = 1e-8
 
@@ -72,34 +79,6 @@ def alpha_schedule(
     btt = torch.tensor(btt.astype("float64"))
     ctt = torch.tensor(ctt.astype("float64"))
     return at, bt, ct, att, btt, ctt
-
-
-# def alpha_schedule2(time_step, N=100, att_1=0.9999, att_T=0.000001, ctt_1=0.000001, ctt_T=0.9999):
-#     att = np.arange(0, time_step) / (time_step - 1) * (att_T - att_1) + att_1
-#     att = np.concatenate(([1], att))
-#     at = att[1:] / att[:-1]
-#
-#     bt = (np.exp(-np.arange(1,len(at)+1)))*(1-at)/N
-#
-#
-#     ctt = np.arange(0, time_step) / (time_step - 1) * (ctt_T - ctt_1) + ctt_1
-#     ctt = np.concatenate(([0], ctt))
-#     one_minus_ctt = 1 - ctt
-#     one_minus_ct = one_minus_ctt[1:] / one_minus_ctt[:-1]
-#     ct = 1 - one_minus_ct
-#
-#     bt = (1 - at - ct) / N
-#     att = np.concatenate((att[1:], [1]))
-#     ctt = np.concatenate((ctt[1:], [0]))
-#     btt = (1 - att - ctt) / N
-#
-#     at = torch.tensor(at.astype('float64'))
-#     bt = torch.tensor(bt.astype('float64'))
-#     ct = torch.tensor(ct.astype('float64'))
-#     att = torch.tensor(att.astype('float64'))
-#     btt = torch.tensor(btt.astype('float64'))
-#     ctt = torch.tensor(ctt.astype('float64'))
-#     return at, bt, ct, att, btt, ctt
 
 
 class DiffusionTransformer(nn.Module):
